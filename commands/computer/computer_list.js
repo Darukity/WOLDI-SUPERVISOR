@@ -2,24 +2,20 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const fs = require('fs');
 
-const path = 'commands/computer/computer_data/computers.json';
+const computers_manager = require('./computer_data/computers_manager');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('computerlist')
         .setDescription('List all computers'),
     async execute(interaction, client) {
-        const data = JSON.parse(fs.readFileSync(path));
-        if (data.computers.length === 0) {
-            await interaction.reply('No computer in the database');
-            return;
-        }
+
+        const fields = computers_manager.getComputerList();
         const embed = new EmbedBuilder()
-            .setTitle('List of computers');
-            
-        for (let i = 0; i < data.computers.length; i++) {
-            embed.addFields({name: data.computers[i].name, value: `IP: ${data.computers[i].ip}\nMAC: ${data.computers[i].mac}\nAsigned: ${data.computers[i].bot_port?`Yes (${data.computers[i].bot_port})`:'No'}`});
-        }
+            .setTitle('List of computers')
+            .setDescription('Here is the list of all computers')
+            .setTimestamp()
+            .setFields(fields);
         await interaction.reply({ embeds: [embed] });
     },
 

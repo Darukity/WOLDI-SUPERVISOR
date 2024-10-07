@@ -20,6 +20,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('node:fs');
 
+const computers_manager = require('./computer_data/computers_manager');
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('addcomputer')
@@ -44,29 +46,6 @@ module.exports = {
         const name = interaction.options.getString('name');
         const ip = interaction.options.getString('ip');
         const mac = interaction.options.getString('mac');;
-        const path = 'commands/computer/computer_data/computers.json';
-        const data = JSON.parse(fs.readFileSync(path));
-        for (let i = 0; i < data.computers.length; i++) {
-            if (data.computers[i].name === name) {
-                await interaction.reply('This computer already exists in the database');
-                return;
-            }
-            if (data.computers[i].ip === ip) {
-                await interaction.reply('This ip already exists in the database');
-                return;
-            }
-            if (data.computers[i].mac === mac) {
-                await interaction.reply('This mac already exists in the database');
-                return;
-            }
-        }
-        data.computers.push({
-            "name": name,
-            "ip": ip,
-            "mac": mac,
-            "bot_port": ""
-        });
-        fs.writeFileSync(path, JSON.stringify(data));
-        await interaction.reply('Computer added to the database');
+        await interaction.reply(computers_manager.addComputer(name, ip, mac));
 	},
 };

@@ -3,7 +3,9 @@ const ping = require('ping');
 
 const fs = require('fs');
 
-const path = 'commands/computer/computer_data/computers.json';
+const computers_manager = require('./computer_data/computers_manager');
+
+const path = './commands/computer/computer_data/computers.json';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -31,23 +33,21 @@ module.exports = {
 	async execute(interaction, client) {
         const name = interaction.options.getString('pc_name');
 
-        const data = JSON.parse(fs.readFileSync(path));
-
-        let ip = "";
-
-        for (let i = 0; i < data.computers.length; i++) {
-            if (data.computers[i].name === name) {
-                ip = data.computers[i].ip;
-                break;
-            }
+        const ip = computers_manager.getIpByName(name);
+        if (ip === null) {
+            await interaction.reply('Computer not found');
+            return;
         }
 
         try {
-            await ping.promise.probe(ip);
-            await interaction.reply('This computer is online');
-        } catch (error) {
-            await interaction.reply('This computer is not offline');
-            return;
-        }        
+            const res = await ping.promise.probe(ip);
+            if (res.alive) {
+                await interaction.reply('Computer is alive');
+            } else {
+                await interaction.reply('Computer is not alive');
+            }
+        } catch (err) {
+            await interaction.reply('Error');
+        }
 	},
 };

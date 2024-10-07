@@ -5,8 +5,15 @@ const { getPort, newPort } = require('./computer_data/port_manager');
 
 const exec = require('child_process').exec;
 
-// token, bots client id, id of your server
-const path = 'commands/computer/computer_data/computers.json';
+const { io } = require('socket.io-client');
+
+const ping = require('ping');
+
+const computers_manager = require('./computer_data/computers_manager');
+
+const path = './commands/computer/computer_data/computers.json';
+
+// token, bots client id, id of your server, name of the computer
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -46,15 +53,9 @@ module.exports = {
         );
     },
 	async execute(interaction, client) {
-        const ports = [];
-
-        const data = JSON.parse(fs.readFileSync(path));
-        for (let i = 0; i < data.computers.length; i++) {
-            if(!data.computers[i].bot_port === "") {
-                ports.push(data.computers[i].bot_port);
-            }
-        }
-
+        const ports = computers_manager.getPortList();
+        
+        // choose a port
         let port = getPort();
         while (true) {
             if (ports.includes(port)) {
@@ -63,6 +64,8 @@ module.exports = {
                 break;
             }
         }
+
+        // build and run the bot container
         exec(`docker build -t bot .`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -78,14 +81,36 @@ module.exports = {
                 }
                 // console.log(`stdout: ${stdout}`);
                 // console.error(`stderr: ${stderr}`);
+            }).on('exit', (code) => {        
+            //     send ping to pc
+                
+            //     const ip = computers_manager.getIpByName(name);
+        
+            //     try {
+            //         const res = ping.promise.probe(ip);
+            //         if (res.alive) {
+            //             let socket = io(`http://localhost:${port}`);
+            //             socket.emit('newStatus', `${name} is alive`, "Watching");
+            //             socket.emit('setPresenceStatus', "Online")
+            //             socket.disconnect();
+            //         } else {
+            //             let socket = io(`http://localhost:${port}`);
+            //             socket.emit('newStatus', `${name} is not alive`, "Watching");
+            //             socket.emit('setPresenceStatus', "DoNotDisturb")
+            //             socket.disconnect();
+            //         }
+            //     } catch (err) {
+            //         console.error(err);
+            //     }
+            // a debug
             });
         });
         //add port to computer
-        for (let i = 0; i < data.computers.length; i++) {
-            if (data.computers[i].name === interaction.options.getString('pc_name')) {
-                data.computers[i].bot_port = port;
-                fs.writeFileSync(path, JSON.stringify(data, null, 2));
-            }
+        const name = interaction.options.getString('pc_name');
+        const update = computers_manager.updatePort(name, port);
+        if (update == null) {
+            await interaction.reply('This computer does not exist');
+            return;
         }
 
         await interaction.reply('Bot associated to computer');

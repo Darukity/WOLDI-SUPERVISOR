@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('node:fs');
 
-const path = 'commands/computer/computer_data/computers.json';
+const computers_manager = require('./computer_data/computers_manager');
+
+const path = './commands/computer/computer_data/computers.json';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -27,16 +29,7 @@ module.exports = {
     },
     async execute(interaction, client) {
         const name = interaction.options.getString('pc_name');
-        const data = JSON.parse(fs.readFileSync(path));
-        for (let i = 0; i < data.computers.length; i++) {
-            if (data.computers[i].name === name) {
-                data.computers.splice(i, 1);
-                fs.writeFileSync(path, JSON.stringify(data));
-                await interaction.reply('Computer removed');
-                return;
-            }
-        }
-        await interaction.reply('This computer does not exist in the database');
 
+        await interaction.reply(computers_manager.removeComputer(name));
     },
 };
