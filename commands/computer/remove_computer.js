@@ -3,8 +3,6 @@ const fs = require('node:fs');
 
 const computers_manager = require('./computer_data/computers_manager');
 
-const path = './commands/computer/computer_data/computers.json';
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('removecomputer')
@@ -16,12 +14,8 @@ module.exports = {
                 .setAutocomplete(true)),
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
-        const choices = [];
-
-        const data = JSON.parse(fs.readFileSync(path));
-        for (let i = 0; i < data.computers.length; i++) {
-            choices.push(data.computers[i].name);
-        }
+        const choices = computers_manager.getComputerNames();
+        
         const filtered = choices.filter(choice => choice.startsWith(focusedValue));
         await interaction.respond(
             filtered.map(choice => ({ name: choice, value: choice })),

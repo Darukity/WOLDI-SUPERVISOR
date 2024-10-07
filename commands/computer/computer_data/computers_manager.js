@@ -92,6 +92,15 @@ function removeComputer(name) {
     return 'This computer does not exist in the database';
 }
 
+function getComputerNames() {
+    const data = get_computers();
+    let names = [];
+    for (let i = 0; i < data.computers.length; i++) {
+        names.push(data.computers[i].name);
+    }
+    return names;
+}
+
 function getComputerList() {
     const data = get_computers();
     if (data.computers.length === 0) {
@@ -127,5 +136,6 @@ module.exports = {
     addComputer,
     removeComputer,
     getComputerList,
-    updatePort
+    updatePort,
+    getComputerNames
 };
