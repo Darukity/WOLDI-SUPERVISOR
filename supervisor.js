@@ -57,6 +57,12 @@ client.on(Events.InteractionCreate, async interaction => {
 // It makes some properties non-nullable.
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	const path = 'commands/computer/computer_data/computers.json';
+	const data = JSON.stringify({ computers: [] }, null, 2);
+	// create file if it doesn't exist
+	if (!fs.existsSync(path)) {
+		fs.writeFileSync(path, data);
+	}
 });
 
 

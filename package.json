@@ -20,7 +20,10 @@
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
     "http": "^0.0.1-security",
+    "ping": "^0.4.4",
     "socket.io": "^4.8.0",
-    "websocket": "^1.0.35"
+    "socket.io-client": "^4.8.0",
+    "websocket": "^1.0.35",
+    "wol": "^1.0.7"
   }
 }
