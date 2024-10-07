@@ -29,7 +29,7 @@ module.exports = {
                 )
             .addStringOption(option =>
                 option.setName('pc_name')
-                    .setDescription('Votre choix')
+                    .setDescription('The name of the computer')
                     .setRequired(true)
                     .setAutocomplete(true)),
     async autocomplete(interaction) {
