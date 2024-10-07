@@ -39,12 +39,27 @@ module.exports = {
                 .setDescription('The mac of the computer')
                 .setRequired(true)
             ),
+
 	async execute(interaction, client) {
         const name = interaction.options.getString('name');
         const ip = interaction.options.getString('ip');
         const mac = interaction.options.getString('mac');;
         const path = 'commands/computer/computer_data/computers.json';
         const data = JSON.parse(fs.readFileSync(path));
+        for (let i = 0; i < data.computers.length; i++) {
+            if (data.computers[i].name === name) {
+                await interaction.reply('This computer already exists in the database');
+                return;
+            }
+            if (data.computers[i].ip === ip) {
+                await interaction.reply('This ip already exists in the database');
+                return;
+            }
+            if (data.computers[i].mac === mac) {
+                await interaction.reply('This mac already exists in the database');
+                return;
+            }
+        }
         data.computers.push({
             "name": name,
             "ip": ip,
