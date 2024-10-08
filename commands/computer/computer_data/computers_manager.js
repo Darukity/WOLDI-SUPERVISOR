@@ -114,6 +114,16 @@ function getComputerList() {
     return message;
 }
 
+function getMacByName(name) {
+    const data = get_computers();
+    for (let i = 0; i < data.computers.length; i++) {
+        if (data.computers[i].name === name) {
+            return data.computers[i].mac;
+        }
+    }
+    return null;
+}
+
 function updatePort(name, port) {
     const data = get_computers();
     for (let i = 0; i < data.computers.length; i++) {
@@ -137,5 +147,6 @@ module.exports = {
     removeComputer,
     getComputerList,
     updatePort,
-    getComputerNames
+    getComputerNames,
+    getMacByName
 };

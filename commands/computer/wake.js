@@ -2,6 +2,7 @@ const wol = require('wol');
 
 const { SlashCommandBuilder } = require('discord.js');
 
+const computers_manager = require('./computer_data/computers_manager');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,14 +24,19 @@ module.exports = {
         );
     },
     async execute(interaction, client) {
-        const mac = interaction.options.getString('mac');
-        wol.wake(mac, function(err, res) {
+        const name = interaction.options.getString('pc_name');
+        const mac = computers_manager.getMacByName(name);
+        const ip = computers_manager.getIpByName(name);
+
+        wol.wake(mac, {
+            address: ip,
+            port: 9
+        }, function(err, res) {
             if (err) {
                 console.log(err);
                 interaction.reply('An error occured while trying to wake the computer');
             } else {
-                console.log(res);
-                interaction.reply('The computer has been woken up');
+                interaction.reply('Computer woke up');
             }
         });
     },
