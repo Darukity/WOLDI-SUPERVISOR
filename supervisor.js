@@ -4,6 +4,8 @@ require('dotenv').config()
 const fs = require('node:fs');
 const path = require('node:path');
 
+const sheduled_tasks = require('./commands/scheduled_tasks/scheduled.js');
+
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 
@@ -77,6 +79,10 @@ client.once(Events.ClientReady, readyClient => {
 	if (!fs.existsSync(path)) {
 		fs.writeFileSync(path, data);
 	}
+
+	// start all scheduled tasks
+	sheduled_tasks.start(readyClient);
+
 });
 
 

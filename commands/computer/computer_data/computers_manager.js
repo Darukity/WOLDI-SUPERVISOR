@@ -46,6 +46,22 @@ function getComputerByMac(mac) {
     return null;
 }
 
+function getAllComputers() {
+    const data = get_computers();
+    return data.computers;
+}
+
+function getAllAsociatedComputers() {
+    const data = get_computers();
+    let computers = [];
+    for (let i = 0; i < data.computers.length; i++) {
+        if (data.computers[i].bot_port !== "") {
+            computers.push(data.computers[i]);
+        }
+    }
+    return computers;
+}
+
 function getPortList() {
     const data = get_computers();
     const ports = [];
@@ -148,5 +164,7 @@ module.exports = {
     getComputerList,
     updatePort,
     getComputerNames,
-    getMacByName
+    getMacByName,
+    getAllAsociatedComputers,
+    getAllComputers
 };

@@ -5,8 +5,6 @@ const { getPort, newPort } = require('./computer_data/port_manager');
 
 const exec = require('child_process').exec;
 
-const { io } = require('socket.io-client');
-
 const ping = require('ping');
 
 const computers_manager = require('./computer_data/computers_manager');
@@ -75,29 +73,7 @@ module.exports = {
                 }
                 // console.log(`stdout: ${stdout}`);
                 // console.error(`stderr: ${stderr}`);
-            }).on('exit', (code) => {        
-            //     send ping to pc
-                
-            //     const ip = computers_manager.getIpByName(name);
-        
-            //     try {
-            //         const res = ping.promise.probe(ip);
-            //         if (res.alive) {
-            //             let socket = io(`http://localhost:${port}`);
-            //             socket.emit('newStatus', `${name} is alive`, "Watching");
-            //             socket.emit('setPresenceStatus', "Online")
-            //             socket.disconnect();
-            //         } else {
-            //             let socket = io(`http://localhost:${port}`);
-            //             socket.emit('newStatus', `${name} is not alive`, "Watching");
-            //             socket.emit('setPresenceStatus', "DoNotDisturb")
-            //             socket.disconnect();
-            //         }
-            //     } catch (err) {
-            //         console.error(err);
-            //     }
-            // a debug
-            });
+            })
         });
         //add port to computer
         const name = interaction.options.getString('pc_name');
