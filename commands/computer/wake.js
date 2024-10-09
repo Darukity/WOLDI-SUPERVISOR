@@ -4,6 +4,8 @@ const { SlashCommandBuilder } = require('discord.js');
 
 const computers_manager = require('./computer_data/computers_manager');
 
+// TODO: add confirm button to wake up computer
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('wake')

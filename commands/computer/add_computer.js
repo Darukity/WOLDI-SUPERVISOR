@@ -17,6 +17,8 @@
 //     ]
 // }
 
+// TODO: add PC_TYPE and PC_USERNAME to the computer object for shut command
+
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('node:fs');
 

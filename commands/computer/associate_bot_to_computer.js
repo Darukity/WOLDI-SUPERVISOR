@@ -44,7 +44,7 @@ module.exports = {
             filtered.map(choice => ({ name: choice, value: choice })),
         );
     },
-	async execute(interaction, client) {
+	async execute(interaction, client, log_channel_id) {
         const ports = computers_manager.getPortList();
         
         // choose a port
@@ -66,7 +66,7 @@ module.exports = {
             // console.log(`stdout: ${stdout}`);
             // console.error(`stderr: ${stderr}`);
         }).on('exit', (code) => {
-            exec(`docker run -d -p ${port}:3000 -e TOKEN=${interaction.options.getString('token')} -e CLIENT_ID=${interaction.options.getString('bot_id')} -e GUILD_ID=${interaction.options.getString('server_id')} --name ${interaction.options.getString('pc_name')} bot`, (error, stdout, stderr) => {
+            exec(`docker run -d -p ${port}:3000 -e TOKEN=${interaction.options.getString('token')} -e CLIENT_ID=${interaction.options.getString('bot_id')} -e GUILD_ID=${interaction.options.getString('server_id')} -e LOG_CHANNEL_ID=${log_channel_id} --name ${interaction.options.getString('pc_name')} bot`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
