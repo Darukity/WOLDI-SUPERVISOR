@@ -4,4 +4,5 @@ dist/
 .env
 lunch.bat
 .vscode/
-SLAVE
+SL/*
+!SL/put slave bot here
