@@ -51,7 +51,7 @@ The status of the slaves bots show how mutch time the pc was alive and show "off
 
 The state of the bot is also going from online when the pc is on and do not disturb when he is offline.
 
-![Carousel status of the supervisor](https://github.com/Darukity/WOLDI-SUPERVISOR/blob/master/readme_img/1.gif?raw=true "Carousel status of the supervisor")
+![Carousel status of the slaves bot](https://github.com/Darukity/WOLDI-SUPERVISOR/blob/master/readme_img/1.gif?raw=true "Carousel status of the slaves bot")
 
 # How to associate a bot to a computer
 
