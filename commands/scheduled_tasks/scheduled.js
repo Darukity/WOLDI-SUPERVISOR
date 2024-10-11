@@ -80,12 +80,14 @@ function carouselStatusSlave() {
                 const socket = io(`http://localhost:${computers[i].bot_port}`);
                 socket.emit('newStatus', `Current streak: ${convertSecondsToTime(current_streak)}`, 'Playing', () => {
                     socket.disconnect();
+                    socket.close();
                 });
             } else {
                 // if the computer is not in the computers_alive array, set the status to "Offline"
                 const socket = io(`http://localhost:${computers[i].bot_port}`);
                 socket.emit('newStatus', 'Offline', 'Watching', () => {
                     socket.disconnect();
+                    socket.close();
                 });
             }
         }
@@ -110,6 +112,7 @@ function pingComputers() {
                             const socket = io(`http://localhost:${computers_manager.getComputerByName(computer.name).bot_port}`);
                             socket.emit('setPresenceStatus', 'Online', () => {
                                 socket.disconnect();
+                                socket.close();
                             });
                         }
                         
@@ -122,6 +125,7 @@ function pingComputers() {
                             const socket = io(`http://localhost:${computers_manager.getComputerByName(computer.name).bot_port}`);
                             socket.emit('setPresenceStatus', 'DoNotDisturb', () => {
                                 socket.disconnect();
+                                socket.close();
                             });
                         }
                     }
@@ -180,6 +184,7 @@ function announceBestStreaks() {
                 const socket = io(`http://localhost:${computers_manager.getComputerByName(name).bot_port}`);
                 socket.emit('log', `${name} has beaten his uptime streak that was: ${convertSecondsToTime(data.computers[i].best_streak)}`, () => {
                     socket.disconnect();
+                    socket.close();
                 });
                 is_in_best_streak.push(data.computers[i].name);
             }
@@ -204,6 +209,7 @@ function checkIfComputerIsAlive() {
                 const socket = io(`http://localhost:${computers_manager.getComputerByName(is_in_best_streak[i]).bot_port}`);
                 socket.emit('log', `${is_in_best_streak[i]} has shut down`, () => {
                     socket.disconnect();
+                    socket.close();
                 });
                 // remove the computer from the is_in_best_streak array
                 is_in_best_streak = is_in_best_streak.filter(name => name !== is_in_best_streak[i]);
@@ -242,7 +248,8 @@ function sendLogTest() {
 
             const socket = io(`http://localhost:${port}`);
             socket.emit('log', 'Test log', () => {
-                socket.disconnect(); // Close the connection after emitting the log
+                socket.disconnect();
+                socket.close();
             });
         }        
     }, 10000);
