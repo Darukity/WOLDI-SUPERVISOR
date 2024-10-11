@@ -206,7 +206,7 @@ function announceBestStreaks() {
             if (data.computers[i].is_in_best_streak && !is_in_best_streak.includes(data.computers[i].name)) {
                 // announce the best streak
                 const name = data.computers[i].name;
-                console.log(`http://localhost:${computers_manager.getComputerByName(name).bot_port}`);
+                // console.log(`http://localhost:${computers_manager.getComputerByName(name).bot_port}`);
                 const socket = io(`http://localhost:${computers_manager.getComputerByName(name).bot_port}`);
                 socket.emit('log', `${name} has beaten his uptime streak that was: ${convertSecondsToTime(data.computers[i].best_streak)}`, () => {
                     socket.disconnect();

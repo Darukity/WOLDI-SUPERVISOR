@@ -1,10 +1,8 @@
 const wol = require('wol');
 
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const computers_manager = require('./computer_data/computers_manager');
-
-// TODO: add confirm button to wake up computer
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,19 +25,48 @@ module.exports = {
     },
     async execute(interaction, client) {
         const name = interaction.options.getString('pc_name');
-        const mac = computers_manager.getMacByName(name);
-        const ip = computers_manager.getIpByName(name);
 
-        wol.wake(mac, {
-            address: ip,
-            port: 9
-        }, function(err, res) {
-            if (err) {
-                console.log(err);
-                interaction.reply('An error occured while trying to wake the computer');
-            } else {
-                interaction.reply('Computer woke up');
-            }
+        const confirm = new ButtonBuilder()
+        .setCustomId('wake up now')
+        .setLabel('wake up now')
+        .setStyle(ButtonStyle.Primary);
+
+        const cancel = new ButtonBuilder()
+            .setCustomId('cancel')
+            .setLabel('Cancel')
+            .setStyle(ButtonStyle.Secondary);
+
+        const row = new ActionRowBuilder()
+            .addComponents(cancel, confirm);
+
+        const response = await interaction.reply({
+            content: `Are you sure you want to wake ${name} ?`,
+            components: [row],
         });
+
+        const collectorFilter = i => i.user.id === interaction.user.id;
+        try {
+            const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
+
+            if (confirmation.customId === 'wake up now') {
+                const mac = computers_manager.getMacByName(name);
+                const ip = computers_manager.getIpByName(name);
+                wol.wake(mac, {
+                    address: ip,
+                    port: 9
+                }, function(err, res) {
+                    if (err) {
+                        console.log(err);
+                        interaction.editReply('An error occured while trying to wake the computer');
+                        return;
+                    }
+                });
+                await confirmation.update({ content: `${name} has been waken up`, components: [] });
+            } else if (confirmation.customId === 'cancel') {
+                await confirmation.update({ content: 'Wake aborted', components: [] });
+            }
+        } catch (e) {
+            await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [] });
+        }
     },
 };
