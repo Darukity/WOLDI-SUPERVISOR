@@ -19,7 +19,7 @@ const ping = require('ping');
 const { io } = require('socket.io-client');
 
 const computers_manager = require('../computer/computer_data/computers_manager');
-const sheduled_data_manager = require('./sheduled_data/sheduled_data_manager.js');
+const sheduled_data_manager = require('./scheduled_data/scheduled_data_manager.js');
 /* available functions from sheduled_data_manager.js
     getAllComputers,
     addCompueterToSheduled,
@@ -27,7 +27,9 @@ const sheduled_data_manager = require('./sheduled_data/sheduled_data_manager.js'
     updateBestStreak,
     updateCurrentStreak,
     setIsInBestStreak,
-    updateLastSeen
+    updateLastSeen,
+    getIsAlive,
+    updateIsAlive
 */
 
 const { ActivityType } = require('discord.js');
@@ -109,30 +111,54 @@ function pingComputers() {
                         sheduled_data_manager.updateLastSeen(computer.name, new Date().toISOString());
                         // setPresenceStatus of the computer if it is asociated and alive
                         if (computers_manager.getComputerByName(computer.name).bot_port !== "") {
-                            const socket = io(`http://localhost:${computers_manager.getComputerByName(computer.name).bot_port}`);
-                            socket.emit('setPresenceStatus', 'Online', () => {
-                                socket.disconnect();
-                                socket.close();
-                            });
+                            setPresenceStatus(true, computer.name);
                         }
                         
                     }
                 } else {
                     if (computers_alive.includes(computer.name)) {
                         computers_alive = computers_alive.filter(name => name !== computer.name)
-                        // setPresenceStatus of the computer if it is asociated and not alive
-                        if (computers_manager.getComputerByName(computer.name).bot_port !== "") {
-                            const socket = io(`http://localhost:${computers_manager.getComputerByName(computer.name).bot_port}`);
-                            socket.emit('setPresenceStatus', 'DoNotDisturb', () => {
-                                socket.disconnect();
-                                socket.close();
-                            });
-                        }
+                    }
+                    // setPresenceStatus of the computer if it is asociated and not alive
+                    if (computers_manager.getComputerByName(computer.name).bot_port !== "") {
+                        setPresenceStatus(false, computer.name);
                     }
                 }
             });
         });
     }, 10000);
+}
+
+/**
+ * Sets the presence status of the computer.
+ *
+ * @param {boolean} newState - The new state to set. `true` for online, `false` for offline.
+ * @param {string} computerName - The name of the computer to set the presence status for.
+ *
+ * @description
+ * This function changes the presence status of the computer. If the new state is different from the current state,
+ * it will emit a socket event to update the status. When `newState` is `true`, the status is set to 'Online'.
+ * When `newState` is `false`, the status is set to 'DoNotDisturb'.
+ */
+function setPresenceStatus(newState, computerName) {
+    const state = sheduled_data_manager.getIsAlive(computerName);
+    if (state !== newState) {
+        if (newState) {
+            const socket = io(`http://localhost:${computers_manager.getComputerByName(computerName).bot_port}`);
+            socket.emit('setPresenceStatus', 'Online', () => {
+                socket.disconnect();
+                socket.close();
+            });
+            sheduled_data_manager.updateIsAlive(computerName, true);
+        } else {
+            const socket = io(`http://localhost:${computers_manager.getComputerByName(computerName).bot_port}`);
+            socket.emit('setPresenceStatus', 'DoNotDisturb', () => {
+                socket.disconnect();
+                socket.close();
+            });
+            sheduled_data_manager.updateIsAlive(computerName, false);
+        }
+    }
 }
 
 // Update the current_streak with a time for all computers if they are in computer_alive array
