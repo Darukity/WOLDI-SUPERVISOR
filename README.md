@@ -38,6 +38,7 @@ The goal of WOLDI (Wake On LAN Discord Interface) is to create a way to wake up 
 - **/streek**: Get the current streak of a computer (returns last seen if offline).
 - **/restaure**: Restore all containers that could be off after an electricity shutdown.
 - **/routine**: Start and stop routines for a PC (like wake up at 8 AM and shut down at 10 PM).
+- **/webconf**: Start a webview to edit routine and other stuff more easily.
 
 ## Carousel status of the supervisor
 
